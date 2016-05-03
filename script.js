@@ -1,11 +1,25 @@
 var path = require('path');
+var os = require('os');
 var fs = require('fs');
 var execSync = require('child_process').execSync;
 var exec = require('child_process').exec;
 
-var HOME_DIR = process.env.HOME;
-var dayonedir = execSync('ls ~/Library/Group\\ Containers/|grep dayoneapp2').toString().replace(/\n/g, "");
-var DAYONE = path.join(HOME_DIR, 'Library/Group Containers/', dayonedir, '/Data/Auto Import/Default Journal.dayone');
+function find_dayone2_dir()
+{
+    var container_dir = path.join(os.homedir(),
+                                  "Library", "Group Containers");
+    var val = "";
+    var files = fs.readdirSync(container_dir);
+    files.some(function(file) {
+        if(path.extname(file) == ".dayoneapp2") {
+            val = path.join(container_dir, file,
+                            "Data", "Auto Import", "Default Journal.dayone");
+            return false;
+        }
+    });
+    return val;
+}
+var DAYONE = find_dayone2_dir();
 //console.log(DAYONE);
 
 var canvas = document.getElementById("notification");
