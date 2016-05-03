@@ -1,8 +1,22 @@
+const electron = require('electron');
+const app = electron.app;
 var path = require('path');
 var os = require('os');
 var fs = require('fs');
 var execSync = require('child_process').execSync;
 var exec = require('child_process').exec;
+
+function take_ss(dir)
+{
+    var tmp = path.join(dir, "temp_ss.png");
+    var cmd = "/usr/sbin/screencapture -C -x " + tmp.replace(/(\s)/g, "\\ ");
+    execSync(cmd);
+    return tmp;
+}
+function release_ss(file)
+{
+    fs.unlinkSync(file);
+}
 
 function find_dayone2_dir()
 {
@@ -44,7 +58,8 @@ require('electron').ipcRenderer.on('Send', function(event, message) {
     fs.writeFileSync(temp_txt_path, entryText);
     //entryText = entryText.replace(/\n/g, "\\n")
     //var cmd = 'echo "' + entryText + '" | /usr/local/bin/dayone -j=' + DAYONE.replace(/(\s)/g, "\\ ") + ' new';
-    var cmd = '/usr/local/bin/dayone -j=' + DAYONE.replace(/(\s)/g, "\\ ") + ' new < ' + temp_txt_path;
+      var ss = take_ss(message);
+      var cmd = '/usr/local/bin/dayone -p=' + ss.replace(/(\s)/g, "\\ ") + ' -j=' + DAYONE.replace(/(\s)/g, "\\ ") + ' new < ' + temp_txt_path;
     //console.log(cmd)
     exec(cmd, function(error, stdout, stderr) {
         canvas.style.zIndex = 1;
@@ -53,6 +68,7 @@ require('electron').ipcRenderer.on('Send', function(event, message) {
         }, 1000);
         console.log(error);
         fs.unlinkSync(temp_txt_path);
+	release_ss(ss);
     });
     myCodeMirror.doc.setValue("");
   }
