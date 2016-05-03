@@ -4,12 +4,15 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+      "build": "node_modules/.bin/electron .",
+      "release": "node release.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "electron-packager": "^7.0.1",
     "electron-prebuilt": "^0.36.2"
   },
   "dependencies": {
