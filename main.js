@@ -74,6 +74,7 @@ function popup_show(window) {
 }
 
 function half_hide(window) {
+    if (disable_pop_func) return;
     // preserve current position and dimension.
     preserve_geometry(window);
     // set position and dimension to minimize.
@@ -81,6 +82,10 @@ function half_hide(window) {
     var sg  = scr.getPrimaryDisplay().workAreaSize;
     window.setBounds( {x: 0, y: sg.height - 24, width: 256, height: 48}, false )
 }
+
+var disable_pop_func = false;
+exports.disable_pop = function () { disable_pop_func = true; };
+exports.enable_pop  = function () { disable_pop_func = false;};
 
 app.on('ready', function() {
   mainWindow = new BrowserWindow({width: 300, height: 200});
@@ -94,6 +99,7 @@ app.on('ready', function() {
 	popup_show(mainWindow);
     });
   mainWindow.on('blur', function() {
+      if (disable_pop_func) return;
       half_hide(mainWindow);
   });
   mainWindow.on('closed', function() {

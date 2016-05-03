@@ -1,10 +1,9 @@
-const electron = require('electron');
-const app = electron.app;
 var path = require('path');
 var os = require('os');
 var fs = require('fs');
 var execSync = require('child_process').execSync;
 var exec = require('child_process').exec;
+var main = require('remote').require("./main");
 
 function take_ss(dir)
 {
@@ -58,7 +57,13 @@ require('electron').ipcRenderer.on('Send', function(event, message) {
     fs.writeFileSync(temp_txt_path, entryText);
     //entryText = entryText.replace(/\n/g, "\\n")
     //var cmd = 'echo "' + entryText + '" | /usr/local/bin/dayone -j=' + DAYONE.replace(/(\s)/g, "\\ ") + ' new';
+      var w = require('remote').getCurrentWindow();
+      main.disable_pop();
+      w.hide();
       var ss = take_ss(message);
+      w.show();
+      main.enable_pop();
+
       var cmd = '/usr/local/bin/dayone -p=' + ss.replace(/(\s)/g, "\\ ") + ' -j=' + DAYONE.replace(/(\s)/g, "\\ ") + ' new < ' + temp_txt_path;
     //console.log(cmd)
     exec(cmd, function(error, stdout, stderr) {
